@@ -4,7 +4,7 @@ import pickle
 import os
 import datetime
 import csv
-from spoof_check import check_liveness
+from spoof_check import check_liveness, reset_liveness_history
 
 def load_encodings():
     known_encodings = []
@@ -137,44 +137,66 @@ if __name__ == "__main__":
 
         while True:
             ret, frame = video_capture.read()
-            if not ret: break
+            if not ret:
+                print("Failed to grab frame")
+                break
 
             small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
             rgb_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2RGB)
-            
+
             face_locations = face_recognition.face_locations(rgb_small_frame)
             face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
+            # Reset liveness history when no face so we don't use old data
+            if len(face_locations) == 0:
+                reset_liveness_history()
+
             detected_name = "Unknown"
-            
+            is_live = False
+
             for face_encoding in face_encodings:
-                matches = face_recognition.compare_faces(known_encodings, face_encoding)
+                matches = face_recognition.compare_faces(known_encodings, face_encoding, tolerance=0.6)
                 if True in matches:
                     first_match_index = matches.index(True)
                     detected_name = known_names[first_match_index]
-                    break # Take first match
-            
-            # Display
+                    break
+
+            # Update liveness check each frame when we have a face (use first face location)
+            if len(face_locations) > 0:
+                is_live = check_liveness(frame, face_locations[0])
+
+            # Display (scale locations back to full frame for drawing)
             for (top, right, bottom, left) in face_locations:
-                top *= 4; right *= 4; bottom *= 4; left *= 4
+                top *= 4
+                right *= 4
+                bottom *= 4
+                left *= 4
                 cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
-                cv2.putText(frame, detected_name, (left, top-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+                cv2.putText(frame, detected_name, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+                if not is_live and detected_name != "Unknown":
+                    cv2.putText(frame, "Move head then 1/2", (left, bottom + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 165, 255), 1)
 
             cv2.imshow("Attendance", frame)
-            
+
             key = cv2.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
             elif key == ord('1'):
                 if detected_name != "Unknown":
-                    mark_attendance(detected_name, "1")
-                    print(f"Punched IN: {detected_name}")
+                    if is_live:
+                        mark_attendance(detected_name, "1")
+                        print(f"Punched IN: {detected_name}")
+                    else:
+                        print("Spoof check failed. Move your head slightly, then press 1 again.")
                 else:
                     print("Cannot punch in: Unknown or no face.")
             elif key == ord('2'):
                 if detected_name != "Unknown":
-                    mark_attendance(detected_name, "2")
-                    print(f"Punched OUT: {detected_name}")
+                    if is_live:
+                        mark_attendance(detected_name, "2")
+                        print(f"Punched OUT: {detected_name}")
+                    else:
+                        print("Spoof check failed. Move your head slightly, then press 2 again.")
                 else:
                     print("Cannot punch out: Unknown or no face.")
 

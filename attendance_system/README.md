@@ -58,7 +58,17 @@ Open your terminal and run:
 ```bash
 pip install -r requirements.txt
 ```
-*(Note: Requires CMake and Visual Studio build tools on Windows, or standard build-essential on Linux)*
+
+**If `face_recognition` fails (e.g. dlib build error on Windows):**
+1. Install **CMake** from [cmake.org](https://cmake.org/) and add it to your PATH.
+2. On Windows, install **Visual Studio Build Tools** (C++ workload) if needed.
+3. Then run:
+   ```bash
+   pip install cmake
+   pip install dlib
+   pip install face_recognition
+   ```
+   Or install system CMake first, then `pip install -r requirements.txt` again.
 
 ### Step 2: Register a User
 Run the registration script to add a new face:
@@ -79,6 +89,10 @@ python recognize_face.py
 - Press **'2'** to Punch Out.
 - Press **'q'** to exit.
 - Attendance is saved in `attendance.csv`.
+
+### Troubleshooting
+- **Webcam does not open:** In `register_face.py` and `recognize_face.py`, change `cv2.VideoCapture(0)` to `cv2.VideoCapture(1)` (or another index) if you have multiple cameras.
+- **Face not detected:** Ensure good lighting and face the camera; the system uses HOG detection which works best with a clear, front-facing face.
 
 ## 8. Evaluation Criteria Mapping
 | Criteria | Implementation |
