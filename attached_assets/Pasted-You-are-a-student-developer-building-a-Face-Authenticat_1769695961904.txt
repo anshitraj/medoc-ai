@@ -1,0 +1,201 @@
+You are a student developer building a Face Authentication Attendance System for a university assignment.
+
+Build a complete Python-based project with the following requirements:
+
+FUNCTIONAL REQUIREMENTS
+
+The system must:
+
+Register a user's face using a real webcam
+
+Identify the face using live camera input
+
+Mark attendance as:
+
+Punch-in
+
+Punch-out
+
+Work in real-time with a webcam
+
+Handle basic lighting variation
+
+Include basic spoof prevention (eye blink OR head movement detection)
+
+TECH STACK (must use)
+
+Python 3
+
+OpenCV
+
+face_recognition library
+
+SQLite or CSV for attendance storage
+
+Do NOT train any deep learning model manually. Use pretrained models from face_recognition.
+
+PROJECT STRUCTURE (generate exactly this)
+
+attendance_system/
+│
+├── register_face.py
+├── recognize_face.py
+├── spoof_check.py
+├── attendance.csv
+├── faces/
+├── requirements.txt
+└── README.md
+
+MODULE BEHAVIOR
+register_face.py
+
+Open webcam
+
+Ask user for name
+
+Capture face image
+
+Save image in faces/ folder
+
+Store face encoding
+
+recognize_face.py
+
+Load stored face encodings
+
+Open webcam
+
+Detect face
+
+Match with registered users
+
+Ask whether:
+1 = Punch in
+2 = Punch out
+
+Save timestamp in attendance.csv
+
+spoof_check.py
+
+Implement basic spoof detection using:
+
+Eye blink detection OR
+
+Head movement detection
+
+Reject static images
+
+ATTENDANCE FORMAT (CSV)
+
+Name, Date, Time, Status
+
+Example:
+Rahul, 2026-01-29, 09:10:22, Punch-in
+
+README.md CONTENT (IMPORTANT)
+
+Generate a full README.md written like a student project report including:
+
+1. Project Overview
+
+Explain the problem and purpose
+
+2. Model and Approach Used
+
+Explain:
+
+Face detection
+
+Face encoding (128-d embeddings)
+
+Matching using Euclidean distance
+
+3. Training Process
+
+Explain that pretrained model is used and faces are registered instead of training
+
+4. Accuracy Expectations
+
+Mention:
+
+Good lighting: 90–95%
+
+Poor lighting: 70–80%
+
+5. Spoof Prevention Method
+
+Explain blink or movement detection
+
+6. Known Failure Cases
+
+List:
+
+Low light
+
+Twins
+
+Printed photo
+
+Mask
+
+7. How to Run
+
+Give step-by-step instructions:
+
+pip install requirements
+
+run register_face.py
+
+run recognize_face.py
+
+8. Evaluation Criteria Mapping
+
+Explain how system satisfies:
+
+Functional accuracy
+
+Reliability
+
+ML limitations
+
+Practical quality
+
+STYLE REQUIREMENTS
+
+Code must be simple
+
+Variable names readable
+
+Comments written like a student
+
+No enterprise-level complexity
+
+No cloud deployment
+
+Local webcam only
+
+No UI frameworks
+
+OUTPUT FORMAT
+
+Generate:
+
+Full code for each file
+
+requirements.txt
+
+Full README.md
+
+Clear separation of files
+
+No placeholders
+
+No missing logic
+
+IMPORTANT
+
+This must look like:
+✔ A college ML project
+✔ Not a corporate system
+✔ Simple, understandable, and practical
+✔ Meets assignment rubric exactly
